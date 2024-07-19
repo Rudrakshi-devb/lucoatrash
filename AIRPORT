@@ -1,0 +1,111 @@
+-- Create Flights Table
+CREATE TABLE Flights (
+    flno INTEGER PRIMARY KEY,
+    from_city VARCHAR(50),
+    to_city VARCHAR(50),
+    distance INTEGER,
+    departs TIME,
+    arrives TIME,
+    price INTEGER
+);
+
+-- Create Aircraft Table
+CREATE TABLE Aircraft (
+    aid INTEGER PRIMARY KEY,
+    aname VARCHAR(50),
+    cruisingrange INTEGER
+);
+
+-- Create Certified Table
+CREATE TABLE Certified (
+    eid INTEGER,
+    aid INTEGER,
+    PRIMARY KEY (eid, aid),
+    FOREIGN KEY (eid) REFERENCES Employees(eid),
+    FOREIGN KEY (aid) REFERENCES Aircraft(aid)
+);
+
+-- Create Employees Table
+CREATE TABLE Employees (
+    eid INTEGER PRIMARY KEY,
+    ename VARCHAR(50),
+    salary INTEGER
+);
+
+-- Insert records into Flights Table
+INSERT INTO Flights (flno, from_city, to_city, distance, departs, arrives, price) VALUES
+(101, 'Los Angeles', 'Honolulu', 2500, '08:00:00', '11:00:00', 500),
+(102, 'New York', 'Los Angeles', 4000, '09:00:00', '12:00:00', 700),
+(103, 'Chicago', 'Miami', 1500, '07:00:00', '10:00:00', 300),
+(104, 'San Francisco', 'Seattle', 1200, '10:00:00', '12:00:00', 350),
+(105, 'Boston', 'New York', 2000, '06:00:00', '08:00:00', 450),
+(106, 'Honolulu', 'Tokyo', 4000, '15:00:00', '21:00:00', 800),
+(107, 'Los Angeles', 'Dallas', 2000, '08:00:00', '12:00:00', 400),
+(108, 'Miami', 'New York', 1200, '14:00:00', '16:00:00', 300),
+(109, 'Chicago', 'Los Angeles', 3500, '13:00:00', '16:00:00', 600),
+(110, 'San Francisco', 'Las Vegas', 700, '09:00:00', '10:00:00', 200);
+
+-- Insert records into Aircraft Table
+INSERT INTO Aircraft (aid, aname, cruisingrange) VALUES
+(1, 'Boeing 737', 3000),
+(2, 'Airbus A320', 3500),
+(3, 'Boeing 777', 7000),
+(4, 'Airbus A380', 8000),
+(5, 'Boeing 787', 6000),
+(6, 'Concorde', 4000),
+(7, 'Bombardier Q400', 1500),
+(8, 'Embraer E190', 2500),
+(9, 'Cessna 172', 600),
+(10, 'Gulfstream G650', 7500);
+
+-- Insert records into Certified Table
+INSERT INTO Certified (eid, aid) VALUES
+(1, 1),
+(1, 2),
+(2, 3),
+(2, 4),
+(3, 2),
+(3, 5),
+(4, 1),
+(4, 6),
+(5, 4),
+(6, 7),
+(7, 8),
+(8, 9),
+(8, 10);
+
+-- Insert records into Employees Table
+INSERT INTO Employees (eid, ename, salary) VALUES
+(1, 'John Smith', 90000),
+(2, 'Jane Doe', 85000),
+(3, 'Alice Johnson', 70000),
+(4, 'Bob Brown', 95000),
+(5, 'Charlie Davis', 75000),
+(6, 'Eve Wilson', 68000),
+(7, 'Frank Miller', 80000),
+(8, 'Grace Moore', 60000),
+(9, 'Hank Taylor', 72000),
+(10, 'Ivy Anderson', 75000);
+
+SELECT DISTINCT A.aname
+FROM Aircraft A
+JOIN Certified C ON A.aid = C.aid
+JOIN Employees E ON C.eid = E.eid
+GROUP BY A.aname
+HAVING MIN(E.salary) > 80000;
+
+SELECT C.eid, MAX(A.cruisingrange) AS max_cruisingrange
+FROM Certified C
+JOIN Aircraft A ON C.aid = A.aid
+GROUP BY C.eid
+HAVING COUNT(C.aid) > 3;
+
+SELECT E.ename
+FROM Employees E
+JOIN Certified C ON E.eid = C.eid
+JOIN Aircraft A ON C.aid = A.aid
+JOIN Flights F ON A.aid = F.from_city -- This JOIN might need adjustment based on actual schema relationships
+WHERE F.from_city = 'Los Angeles' AND F.to_city = 'Honolulu'
+AND E.salary < (SELECT MIN(price) FROM Flights WHERE from_city = 'Los Angeles' AND to_city = 'Honolulu');SELECT MAX(salary) AS second_highest_salary
+FROM Employees
+WHERE salary < (SELECT MAX(salary) FROM Employees);
