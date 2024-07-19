@@ -1,0 +1,136 @@
+-- Create the tables with appropriate integrity constraints
+
+-- Create STUDENT Table
+CREATE TABLE STUDENT (
+    Rollno INTEGER PRIMARY KEY,
+    Name VARCHAR(50),
+    Sem INTEGER,
+    Degree VARCHAR(50),
+    Contact_no INTEGER,
+    Guide_No INTEGER,
+    FOREIGN KEY (Guide_No) REFERENCES GUIDE(Guide_No)
+);
+
+-- Create GUIDE Table
+CREATE TABLE GUIDE (
+    Guide_name VARCHAR(50),
+    Guide_No INTEGER PRIMARY KEY,
+    Guide_research_domain VARCHAR(50),
+    Contact_No INTEGER,
+    Email_Id VARCHAR(50)
+);
+
+-- Create PROJECT Table
+CREATE TABLE PROJECT (
+    Project_No INTEGER PRIMARY KEY,
+    Project_title VARCHAR(100),
+    Project_Area VARCHAR(50),
+    Start_dt DATE,
+    Guide_No INTEGER,
+    FOREIGN KEY (Guide_No) REFERENCES GUIDE(Guide_No)
+);
+
+-- Create GROUP Table
+CREATE TABLE GROUPS (
+    Group_Code INTEGER PRIMARY KEY,
+    Roll_No INTEGER,
+    FOREIGN KEY (Roll_No) REFERENCES STUDENT(Rollno)
+);
+
+-- Create PROJECT_GROUP Table
+CREATE TABLE PROJECT_GROUP (
+    Group_Code INTEGER,
+    Project_No INTEGER,
+    no_of_students INTEGER,
+    PRIMARY KEY (Group_Code, Project_No),
+    FOREIGN KEY (Group_Code) REFERENCES GROUPS(Group_Code),
+    FOREIGN KEY (Project_No) REFERENCES PROJECT(Project_No)
+);
+
+-- Insert records into GUIDE Table
+INSERT INTO GUIDE (Guide_name, Guide_No, Guide_research_domain, Contact_No, Email_Id) VALUES
+('Dr. Smith', 1, 'Machine Learning', 1234567890, 'smith@example.com'),
+('Dr. Jones', 2, 'Artificial Intelligence', 2345678901, 'jones@example.com'),
+('Dr. Brown', 3, 'Database Systems', 3456789012, 'brown@example.com'),
+('Dr. Taylor', 4, 'Networks', 4567890123, 'taylor@example.com'),
+('Dr. Wilson', 5, 'Software Engineering', 5678901234, 'wilson@example.com'),
+('Dr. Lee', 6, 'Cybersecurity', 6789012345, 'lee@example.com'),
+('Dr. Harris', 7, 'Human-Computer Interaction', 7890123456, 'harris@example.com'),
+('Dr. Clark', 8, 'Computer Vision', 8901234567, 'clark@example.com'),
+('Dr. Lewis', 9, 'Natural Language Processing', 9012345678, 'lewis@example.com'),
+('Dr. Walker', 10, 'Data Science', 1234567891, 'walker@example.com');
+
+-- Insert records into STUDENT Table
+INSERT INTO STUDENT (Rollno, Name, Sem, Degree, Contact_no, Guide_No) VALUES
+(101, 'Alice', 3, 'B.Tech', 9876543210, 1),
+(102, 'Bob', 2, 'B.Tech', 8765432109, 1),
+(103, 'Charlie', 4, 'M.Tech', 7654321098, 2),
+(104, 'David', 3, 'B.Tech', 6543210987, 3),
+(105, 'Eve', 1, 'M.Tech', 5432109876, 4),
+(106, 'Frank', 2, 'B.Tech', 4321098765, 5),
+(107, 'Grace', 4, 'M.Tech', 3210987654, 6),
+(108, 'Hank', 3, 'B.Tech', 2109876543, 7),
+(109, 'Ivy', 2, 'M.Tech', 1098765432, 8),
+(110, 'John', 1, 'B.Tech', 9876543211, 9);
+
+-- Insert records into PROJECT Table
+INSERT INTO PROJECT (Project_No, Project_title, Project_Area, Start_dt, Guide_No) VALUES
+(201, 'AI for Healthcare', 'Artificial Intelligence', '2023-01-01', 2),
+(202, 'Database Optimization', 'Database Systems', '2023-02-01', 3),
+(203, 'Secure Network Protocols', 'Networks', '2023-03-01', 4),
+(204, 'Software Development', 'Software Engineering', '2023-04-01', 5),
+(205, 'Human-AI Interaction', 'Human-Computer Interaction', '2023-05-01', 7),
+(206, 'Computer Vision for Retail', 'Computer Vision', '2023-06-01', 8),
+(207, 'NLP for Social Media', 'Natural Language Processing', '2023-07-01', 9),
+(208, 'Data Analytics', 'Data Science', '2023-08-01', 10),
+(209, 'Machine Learning in Finance', 'Machine Learning', '2023-09-01', 1),
+(210, 'AI for Education', 'Artificial Intelligence', '2023-10-01', 2);
+
+-- Insert records into GROUPS Table
+INSERT INTO GROUPS (Group_Code, Roll_No) VALUES
+(301, 101),
+(301, 102),
+(302, 103),
+(303, 104),
+(304, 105),
+(305, 106),
+(306, 107),
+(307, 108),
+(308, 109),
+(309, 110);
+
+-- Insert records into PROJECT_GROUP Table
+INSERT INTO PROJECT_GROUP (Group_Code, Project_No, no_of_students) VALUES
+(301, 201, 2),
+(302, 202, 1),
+(303, 203, 1),
+(304, 204, 1),
+(305, 205, 1),
+(306, 206, 1),
+(307, 207, 1),
+(308, 208, 1),
+(309, 209, 1),
+(301, 210, 2);
+
+-- Query to find the list of guides who are guiding more than two student groups
+SELECT G.Guide_name
+FROM GUIDE G
+JOIN PROJECT P ON G.Guide_No = P.Guide_No
+JOIN PROJECT_GROUP PG ON P.Project_No = PG.Project_No
+GROUP BY G.Guide_name
+HAVING COUNT(DISTINCT PG.Group_Code) > 2;
+
+-- Query to find the list of project numbers, project names, and names of guides in the domain of Database Systems
+SELECT P.Project_No, P.Project_title, G.Guide_name
+FROM PROJECT P
+JOIN GUIDE G ON P.Guide_No = G.Guide_No
+WHERE G.Guide_research_domain = 'Database Systems';
+
+-- Create a view for student_project details
+CREATE VIEW student_project_details AS
+SELECT S.Name AS student_name, P.Project_title AS project_name, G.Guide_name AS guide_name
+FROM STUDENT S
+JOIN GROUPS G ON S.Rollno = G.Roll_No
+JOIN PROJECT_GROUP PG ON G.Group_Code = PG.Group_Code
+JOIN PROJECT P ON PG.Project_No = P.Project_No
+JOIN GUIDE G ON P.Guide_No = G.Guide_No;
