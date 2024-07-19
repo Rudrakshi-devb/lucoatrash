@@ -1,0 +1,106 @@
+-- Create tables with appropriate integrity constraints
+CREATE TABLE Student (
+    Stud_no INTEGER PRIMARY KEY,
+    Stud_name VARCHAR(50)
+);
+
+CREATE TABLE Membership (
+    Mem_no INTEGER PRIMARY KEY,
+    Stud_no INTEGER,
+    FOREIGN KEY (Stud_no) REFERENCES Student(Stud_no)
+);
+
+CREATE TABLE Book (
+    book_no INTEGER PRIMARY KEY,
+    book_name VARCHAR(100),
+    author VARCHAR(50)
+);
+
+CREATE TABLE Iss_rec (
+    iss_no INTEGER PRIMARY KEY,
+    iss_date DATE,
+    Mem_no INTEGER,
+    book_no INTEGER,
+    FOREIGN KEY (Mem_no) REFERENCES Membership(Mem_no),
+    FOREIGN KEY (book_no) REFERENCES Book(book_no)
+);
+
+-- Insert records into Student Table
+INSERT INTO Student (Stud_no, Stud_name) VALUES
+(1, 'Alice Smith'),
+(2, 'Bob Johnson'),
+(3, 'Charlie Brown'),
+(4, 'David Williams'),
+(5, 'Eve Davis'),
+(6, 'Frank Miller'),
+(7, 'Grace Lee'),
+(8, 'Hank Wilson'),
+(9, 'Ivy Clark'),
+(10, 'John Lewis');
+
+-- Insert records into Membership Table
+INSERT INTO Membership (Mem_no, Stud_no) VALUES
+(1001, 1),
+(1002, 2),
+(1003, 3),
+(1004, 4),
+(1005, 5),
+(1006, 6),
+(1007, 7),
+(1008, 8),
+(1009, 9),
+(1010, 10);
+
+-- Insert records into Book Table
+INSERT INTO Book (book_no, book_name, author) VALUES
+(2001, 'Introduction to SQL', 'Alice Walker'),
+(2002, 'Advanced Database Systems', 'Bob Brown'),
+(2003, 'Data Structures and Algorithms', 'Charlie Smith'),
+(2004, 'Operating Systems', 'David Johnson'),
+(2005, 'Computer Networks', 'Eve Thompson'),
+(2006, 'Web Development', 'Frank Davis'),
+(2007, 'Machine Learning', 'Grace Harris'),
+(2008, 'Artificial Intelligence', 'Hank Adams'),
+(2009, 'Software Engineering', 'Ivy Taylor'),
+(2010, 'Database Management Systems', 'John Anderson');
+
+-- Insert records into Iss_rec Table
+INSERT INTO Iss_rec (iss_no, iss_date, Mem_no, book_no) VALUES
+(3001, '2024-07-15', 1001, 2001),
+(3002, '2024-07-15', 1002, 2003),
+(3003, '2024-07-15', 1003, 2004),
+(3004, '2024-07-15', 1004, 2005),
+(3005, '2024-07-15', 1005, 2006),
+(3006, '2024-07-15', 1006, 2007),
+(3007, '2024-07-15', 1007, 2008),
+(3008, '2024-07-15', 1008, 2009),
+(3009, '2024-07-15', 1009, 2010),
+(3010, '2024-07-15', 1010, 2002);
+
+-- c) List all the student names with their membership numbers
+SELECT S.Stud_name, M.Mem_no
+FROM Student S
+JOIN Membership M ON S.Stud_no = M.Stud_no;
+
+-- d) List all the issues for the current date with student and book names
+SELECT S.Stud_name, B.book_name
+FROM Iss_rec I
+JOIN Membership M ON I.Mem_no = M.Mem_no
+JOIN Student S ON M.Stud_no = S.Stud_no
+JOIN Book B ON I.book_no = B.book_no
+WHERE I.iss_date = CURDATE();  -- Use CURRENT_DATE in some SQL environments
+
+-- e) Count of how many books have been bought by each student
+SELECT S.Stud_name, COUNT(I.book_no) AS books_bought
+FROM Student S
+JOIN Membership M ON S.Stud_no = M.Stud_no
+JOIN Iss_rec I ON M.Mem_no = I.Mem_no
+GROUP BY S.Stud_name;
+
+-- f) List of books taken by student with stud_no as 5
+SELECT B.book_name
+FROM Student S
+JOIN Membership M ON S.Stud_no = M.Stud_no
+JOIN Iss_rec I ON M.Mem_no = I.Mem_no
+JOIN Book B ON I.book_no = B.book_no
+WHERE S.Stud_no = 5;
