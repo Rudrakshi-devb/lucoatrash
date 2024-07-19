@@ -144,3 +144,16 @@ FROM Employee E
 JOIN Works_on W ON E.Emp_id = W.Emp_id
 JOIN Project P ON W.P_no = P.P_number
 ORDER BY E.D_no, E.L_name, E.F_name;
+
+CREATE VIEW Dept_info AS
+SELECT 
+    D.D_name AS Department_Name,
+    COUNT(E.Emp_id) AS Number_of_Employees,
+    SUM(E.Salary) AS Total_Salary
+FROM 
+    Department D
+LEFT JOIN 
+    Employee E ON D.D_no = E.D_no
+GROUP BY 
+    D.D_name;
+
