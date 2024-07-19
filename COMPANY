@@ -1,0 +1,146 @@
+-- Create Employee Table
+CREATE TABLE Employee (
+    F_name VARCHAR(50),
+    L_name VARCHAR(50),
+    Emp_id INTEGER PRIMARY KEY,
+    Bdate DATE,
+    Address VARCHAR(100),
+    Gender VARCHAR(10),
+    Salary INTEGER,
+    Super_Emp_id INTEGER,
+    D_no INTEGER,
+    FOREIGN KEY (Super_Emp_id) REFERENCES Employee(Emp_id),
+    FOREIGN KEY (D_no) REFERENCES Department(D_no)
+);
+
+-- Create Department Table
+CREATE TABLE Department (
+    D_name VARCHAR(50),
+    D_no INTEGER PRIMARY KEY,
+    D_Mgr_id INTEGER,
+    Mgr_start_date DATE,
+    FOREIGN KEY (D_Mgr_id) REFERENCES Employee(Emp_id)
+);
+
+-- Create Dept_Location Table
+CREATE TABLE Dept_Location (
+    D_no INTEGER,
+    D_location VARCHAR(100),
+    PRIMARY KEY (D_no, D_location),
+    FOREIGN KEY (D_no) REFERENCES Department(D_no)
+);
+
+-- Create Project Table
+CREATE TABLE Project (
+    P_name VARCHAR(50),
+    P_number INTEGER PRIMARY KEY,
+    P_location VARCHAR(100),
+    D_no INTEGER,
+    FOREIGN KEY (D_no) REFERENCES Department(D_no)
+);
+
+-- Create Works_on Table
+CREATE TABLE Works_on (
+    Emp_id INTEGER,
+    P_no INTEGER,
+    Hours INTEGER,
+    PRIMARY KEY (Emp_id, P_no),
+    FOREIGN KEY (Emp_id) REFERENCES Employee(Emp_id),
+    FOREIGN KEY (P_no) REFERENCES Project(P_number)
+);
+
+-- Create Dependent Table
+CREATE TABLE Dependent (
+    Emp_id INTEGER,
+    Dependent_name VARCHAR(50),
+    Gender VARCHAR(10),
+    Bdate DATE,
+    Relationship VARCHAR(20),
+    PRIMARY KEY (Emp_id, Dependent_name),
+    FOREIGN KEY (Emp_id) REFERENCES Employee(Emp_id)
+);
+
+-- Insert records into Employee Table
+INSERT INTO Employee (F_name, L_name, Emp_id, Bdate, Address, Gender, Salary, Super_Emp_id, D_no)
+VALUES
+('John', 'Doe', 1, '1985-05-15', '123 Elm St', 'M', 70000, NULL, 10),
+('Jane', 'Smith', 2, '1990-06-22', '456 Oak St', 'F', 80000, 1, 10),
+('Alice', 'Johnson', 3, '1982-07-30', '789 Pine St', 'F', 85000, 1, 20),
+('Bob', 'Brown', 4, '1988-08-10', '321 Maple St', 'M', 75000, 2, 20),
+('Charlie', 'Davis', 5, '1991-09-14', '654 Birch St', 'M', 72000, 2, 30),
+('Eve', 'Wilson', 6, '1989-10-25', '987 Cedar St', 'F', 77000, 3, 30),
+('Frank', 'Miller', 7, '1993-11-18', '159 Spruce St', 'M', 70000, 3, 40),
+('Grace', 'Moore', 8, '1984-12-05', '753 Fir St', 'F', 68000, 4, 40),
+('Hank', 'Taylor', 9, '1992-01-12', '852 Willow St', 'M', 71000, 4, 50),
+('Ivy', 'Anderson', 10, '1995-02-28', '963 Redwood St', 'F', 73000, 5, 50);
+
+-- Insert records into Department Table
+INSERT INTO Department (D_name, D_no, D_Mgr_id, Mgr_start_date)
+VALUES
+('HR', 10, 1, '2020-01-01'),
+('Engineering', 20, 3, '2018-03-15'),
+('Marketing', 30, 5, '2019-07-20'),
+('Finance', 40, 7, '2021-06-25'),
+('Sales', 50, 9, '2022-08-30');
+
+-- Insert records into Dept_Location Table
+INSERT INTO Dept_Location (D_no, D_location)
+VALUES
+(10, 'New York'),
+(20, 'San Francisco'),
+(30, 'Chicago'),
+(40, 'Los Angeles'),
+(50, 'Seattle');
+
+-- Insert records into Project Table
+INSERT INTO Project (P_name, P_number, P_location, D_no)
+VALUES
+('Project Alpha', 101, 'New York', 10),
+('Project Beta', 102, 'San Francisco', 20),
+('Project Gamma', 103, 'Chicago', 30),
+('Project Delta', 104, 'Los Angeles', 40),
+('Project Epsilon', 105, 'Seattle', 50),
+('Project Zeta', 106, 'New York', 10),
+('Project Eta', 107, 'San Francisco', 20),
+('Project Theta', 108, 'Chicago', 30),
+('Project Iota', 109, 'Los Angeles', 40),
+('Project Kappa', 110, 'Seattle', 50);
+
+-- Insert records into Works_on Table
+INSERT INTO Works_on (Emp_id, P_no, Hours)
+VALUES
+(1, 101, 40),
+(2, 101, 35),
+(3, 102, 45),
+(4, 102, 30),
+(5, 103, 50),
+(6, 103, 40),
+(7, 104, 38),
+(8, 104, 42),
+(9, 105, 37),
+(10, 105, 32);
+
+-- Insert records into Dependent Table
+INSERT INTO Dependent (Emp_id, Dependent_name, Gender, Bdate, Relationship)
+VALUES
+(1, 'Emily Doe', 'F', '2015-06-15', 'Daughter'),
+(1, 'Michael Doe', 'M', '2017-09-20', 'Son'),
+(2, 'Sarah Smith', 'F', '2017-11-25', 'Daughter'),
+(3, 'David Johnson', 'M', '2014-12-05', 'Son'),
+(4, 'Laura Brown', 'F', '2018-03-10', 'Wife'),
+(5, 'Mia Davis', 'F', '2016-07-15', 'Daughter'),
+(6, 'Liam Wilson', 'M', '2019-01-25', 'Son'),
+(7, 'Sophia Miller', 'F', '2018-10-05', 'Daughter'),
+(8, 'Olivia Moore', 'F', '2016-04-20', 'Daughter'),
+(9, 'James Taylor', 'M', '2020-02-14', 'Son'),
+(10, 'Ava Anderson', 'F', '2022-05-30', 'Daughter');
+
+SELECT E1.F_name, E1.L_name, E1.Address
+FROM Employee E1
+JOIN Employee E2 ON E1.D_no = E2.D_no AND E1.Emp_id <> E2.Emp_id;
+
+SELECT E.L_name, E.F_name, P.P_name
+FROM Employee E
+JOIN Works_on W ON E.Emp_id = W.Emp_id
+JOIN Project P ON W.P_no = P.P_number
+ORDER BY E.D_no, E.L_name, E.F_name;
