@@ -1,0 +1,83 @@
+6.
+#include <GL/glut.h>
+#include <cstdlib> 
+
+// Define initial color
+GLfloat red = 1.0f, green = 0.0f, blue = 0.0f;
+
+// Function to draw a triangle
+void drawTriangle() {
+    glBegin(GL_TRIANGLES);
+    glColor3f(red, green, blue);
+    glVertex2f(-0.5f, -0.5f);
+    glVertex2f(0.5f, -0.5f);
+    glVertex2f(0.0f, 0.5f);
+    glEnd();
+}
+
+// Display callback
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT);
+    drawTriangle();
+    glutSwapBuffers();
+}
+
+// Mouse callback
+void mouse(int button, int state, int x, int y) {
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+        // Change color on left mouse button click
+        red = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+        green = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+        blue = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+        glutPostRedisplay();
+    }
+}
+
+// Keyboard callback
+void keyboard(unsigned char key, int x, int y) {
+    switch (key) {
+    case 'r':
+        red = 1.0f;
+        green = 0.0f;
+        blue = 0.0f;
+        break;
+    case 'g':
+        red = 0.0f;
+        green = 1.0f;
+        blue = 0.0f;
+        break;
+    case 'b':
+        red = 0.0f;
+        green = 0.0f;
+        blue = 1.0f;
+        break;
+    case 'w':
+        red = 1.0f;
+        green = 1.0f;
+        blue = 1.0f;
+        break;
+    }
+    glutPostRedisplay(); // Request a redraw
+}
+
+// Initialize OpenGL settings
+void init() {
+    glClearColor(1.0, 1.0, 1.0, 1.0); // Set clear color to white
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-1.0, 1.0, -1.0, 1.0); // Set the orthographic projection
+}
+
+// Main function
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitWindowSize(500, 500);
+    glutCreateWindow("OpenGL Triangle Color Change");
+    init();
+    glutDisplayFunc(display);
+    glutMouseFunc(mouse);
+    glutKeyboardFunc(keyboard); // Register keyboard callback
+    glutMainLoop();
+    return 0;
+}
