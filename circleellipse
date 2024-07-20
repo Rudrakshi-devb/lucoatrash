@@ -1,0 +1,83 @@
+#include <GL/glut.h>
+#include <cmath>
+
+// Constants for circle and ellipse
+const float PI = 3.14159265358979323846f;
+const int NUM_SEGMENTS = 100; // Number of segments to approximate the circle
+
+// Function to draw a circle
+void drawCircle(float radius) {
+    glBegin(GL_LINE_LOOP);
+    for (int i = 0; i < NUM_SEGMENTS; ++i) {
+        float angle = 2.0f * PI * i / NUM_SEGMENTS;
+        float x = radius * cos(angle);
+        float y = radius * sin(angle);
+        glVertex2f(x, y);
+    }
+    glEnd();
+}
+
+// Function to draw an ellipse
+void drawEllipse(float a, float b) {
+    glBegin(GL_LINE_LOOP);
+    for (int i = 0; i < NUM_SEGMENTS; ++i) {
+        float angle = 2.0f * PI * i / NUM_SEGMENTS;
+        float x = a * cos(angle);
+        float y = b * sin(angle);
+        glVertex2f(x, y);
+    }
+    glEnd();
+}
+
+// Display function
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glPushMatrix();
+    glTranslatef(-0.5f, 0.0f, 0.0f); // Move circle to the left
+    glColor3f(1.0f, 0.0f, 0.0f); // Set color to red
+    drawCircle(0.3f); // Draw circle with radius 0.3
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0.5f, 0.0f, 0.0f); // Move ellipse to the right
+    glColor3f(0.0f, 1.0f, 0.0f); // Set color to green
+    drawEllipse(0.4f, 0.2f); // Draw ellipse with semi-major axis 0.4 and semi-minor axis 0.2
+    glPopMatrix();
+
+    glutSwapBuffers();
+}
+
+// Reshape function
+void reshape(int w, int h) {
+    glViewport(0, 0, (GLsizei)w, (GLsizei)h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-1.0, 1.0, -1.0, 1.0); // Orthographic projection
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
+// Initialize function
+void init() {
+    glClearColor(0.0, 0.0, 0.0, 0.0); // Black background
+    glColor3f(1.0, 1.0, 1.0); // White color for lines
+    glLineWidth(2.0); // Set line width
+    glShadeModel(GL_FLAT);
+}
+
+// Main function
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitWindowSize(500, 500);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("Circle and Ellipse");
+
+    init();
+    glutDisplayFunc(display);
+    glutReshapeFunc(reshape);
+
+    glutMainLoop();
+    return 0;
+}
