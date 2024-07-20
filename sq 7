@@ -1,0 +1,56 @@
+#include <GL/glut.h>
+
+// Initial size of the square
+float size = 0.1f;
+
+// Function to draw a square
+void drawSquare() {
+    glClear(GL_COLOR_BUFFER_BIT);
+    glLoadIdentity();
+
+    glBegin(GL_QUADS);
+    glVertex2f(-size, -size);
+    glVertex2f(size, -size);
+    glVertex2f(size, size);
+    glVertex2f(-size, size);
+    glEnd();
+
+    glutSwapBuffers();
+}
+
+// Mouse click event handler
+void mouseClick(int button, int state, int x, int y) {
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+        size += 0.01f; // Enlarge the square
+        glutPostRedisplay(); // Request a redraw
+    }
+}
+
+// Window reshape event handler
+void reshape(int w, int h) {
+    glViewport(0, 0, w, h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-1, 1, -1, 1);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
+// Initialize GLUT and create the window
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitWindowSize(500, 500);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("2D Object Reshape on Click");
+
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glColor3f(1.0, 1.0, 1.0);
+
+    glutDisplayFunc(drawSquare);
+    glutReshapeFunc(reshape);
+    glutMouseFunc(mouseClick);
+
+    glutMainLoop();
+    return 0;
+}
