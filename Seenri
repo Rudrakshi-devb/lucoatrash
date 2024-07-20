@@ -1,0 +1,58 @@
+#include &lt;GL/glut.h&gt;
+#include &lt;math.h&gt; // Include math.h for sin and cos functions
+void display() {
+glClear(GL_COLOR_BUFFER_BIT);
+// Draw sky
+glColor3f(0.529, 0.808, 0.922); // Light blue
+glBegin(GL_QUADS);
+glVertex2f(-1, 1);
+glVertex2f(1, 1);
+glVertex2f(1, 0);
+glVertex2f(-1, 0);
+glEnd();
+// Draw sun
+glColor3f(1.0, 1.0, 0.0); // Yellow
+glBegin(GL_TRIANGLE_FAN);
+glVertex2f(-0.5, 0.5); // Center of sun
+for (int i = 0; i &lt;= 360; i++) {
+float angle = 3.14159 * 2.0 * i / 360;
+float x = -0.5 + 0.2 * cos(angle);
+float y = 0.5 + 0.2 * sin(angle);
+glVertex2f(x, y);
+}
+glEnd();
+// Draw house
+glColor3f(0.824, 0.706, 0.549); // Light brown
+glBegin(GL_QUADS);
+glVertex2f(-0.2, -0.2);
+glVertex2f(0.2, -0.2);
+glVertex2f(0.2, 0.2);
+glVertex2f(-0.2, 0.2);
+glEnd();
+// Draw roof
+glColor3f(0.545, 0.271, 0.075); // Dark brown
+glBegin(GL_TRIANGLES);
+glVertex2f(-0.2, 0.2);
+glVertex2f(0, 0.4);
+glVertex2f(0.2, 0.2);
+glEnd();
+// Draw ground
+glColor3f(0.133, 0.545, 0.133); // Dark green
+glBegin(GL_QUADS);
+glVertex2f(-1, -1);
+glVertex2f(1, -1);
+glVertex2f(1, 0);
+glVertex2f(-1, 0);
+glEnd();
+glFlush();
+}
+int main(int argc, char** argv) {
+glutInit(&amp;argc, argv);
+glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+glutInitWindowSize(800, 600);
+glutCreateWindow(&quot;Scenery&quot;);
+
+gluOrtho2D(-1, 1, -1, 1);
+glutDisplayFunc(display);
+glutMainLoop();
+return 0;
