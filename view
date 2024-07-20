@@ -1,0 +1,131 @@
+#include <GL/glut.h>
+
+// Enum for view modes
+enum ViewMode {
+    PERSPECTIVE,
+    ORTHOGRAPHIC,
+    OBLIQUE
+};
+
+// Current view mode
+ViewMode viewMode = PERSPECTIVE;
+
+// Function to draw a simple 3D cube
+void drawCube() {
+    glBegin(GL_QUADS);
+    // Front face
+    glVertex3f(-1.0, -1.0,  1.0);
+    glVertex3f( 1.0, -1.0,  1.0);
+    glVertex3f( 1.0,  1.0,  1.0);
+    glVertex3f(-1.0,  1.0,  1.0);
+
+    // Back face
+    glVertex3f(-1.0, -1.0, -1.0);
+    glVertex3f(-1.0,  1.0, -1.0);
+    glVertex3f( 1.0,  1.0, -1.0);
+    glVertex3f( 1.0, -1.0, -1.0);
+
+    // Top face
+    glVertex3f(-1.0,  1.0, -1.0);
+    glVertex3f(-1.0,  1.0,  1.0);
+    glVertex3f( 1.0,  1.0,  1.0);
+    glVertex3f( 1.0,  1.0, -1.0);
+
+    // Bottom face
+    glVertex3f(-1.0, -1.0, -1.0);
+    glVertex3f( 1.0, -1.0, -1.0);
+    glVertex3f( 1.0, -1.0,  1.0);
+    glVertex3f(-1.0, -1.0,  1.0);
+
+    // Right face
+    glVertex3f( 1.0, -1.0, -1.0);
+    glVertex3f( 1.0,  1.0, -1.0);
+    glVertex3f( 1.0,  1.0,  1.0);
+    glVertex3f( 1.0, -1.0,  1.0);
+
+    // Left face
+    glVertex3f(-1.0, -1.0, -1.0);
+    glVertex3f(-1.0, -1.0,  1.0);
+    glVertex3f(-1.0,  1.0,  1.0);
+    glVertex3f(-1.0,  1.0, -1.0);
+    glEnd();
+}
+
+// Function to set the projection matrix based on the view mode
+void setProjection() {
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    switch (viewMode) {
+        case PERSPECTIVE:
+            gluPerspective(45.0, 1.0, 1.0, 100.0);
+            break;
+        case ORTHOGRAPHIC:
+            glOrtho(-2.0, 2.0, -2.0, 2.0, 1.0, 100.0);
+            break;
+        case OBLIQUE:
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            glTranslatef(-1.0, -1.0, -1.0); // Translate to adjust view
+            glRotatef(-45.0, 1.0, 0.0, 0.0); // Rotate to create oblique effect
+            glScalef(1.0, 1.0, 0.5); // Scale to exaggerate the oblique effect
+            break;
+    }
+}
+
+// Display function
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+
+    // Set the projection matrix
+    setProjection();
+
+    // Move the camera
+    gluLookAt(3.0, 3.0, 3.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+
+    // Draw the cube
+    drawCube();
+
+    glutSwapBuffers();
+}
+
+// Keyboard function to switch views
+void keyboard(unsigned char key, int x, int y) {
+    switch (key) {
+        case 'p': // Perspective view
+            viewMode = PERSPECTIVE;
+            break;
+        case 'o': // Orthographic view
+            viewMode = ORTHOGRAPHIC;
+            break;
+        case 'b': // Oblique view
+            viewMode = OBLIQUE;
+            break;
+        default:
+            return;
+    }
+    glutPostRedisplay();
+}
+
+// Initialize function
+void init() {
+    glEnable(GL_DEPTH_TEST); // Enable depth testing
+    glClearColor(0.0, 0.0, 0.0, 0.0); // Black background
+}
+
+// Main function
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitWindowSize(500, 500);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("3D Views: Perspective, Orthographic, Oblique");
+
+    init();
+    glutDisplayFunc(display);
+    glutKeyboardFunc(keyboard);
+
+    glutMainLoop();
+    return 0;
+}
